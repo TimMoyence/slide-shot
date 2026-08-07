@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slide Shot</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div id="error-banner" class="error-banner" hidden>
+  <span id="error-message"></span>
+  <button id="error-dismiss" type="button" aria-label="Fermer le message d'erreur">&times;</button>
+</div>
+
+<!-- Écran de vérification poppler -->
+<section id="view-checking" class="view view-center" hidden>
+  <div class="spinner" aria-hidden="true"></div>
+  <p>Vérification de l'installation…</p>
+</section>
+
+<!-- Écran poppler manquant -->
+<section id="view-poppler-missing" class="view view-center" hidden>
+  <div class="setup-box">
+    <h1>Un composant manque à l'appel</h1>
+    <p>
+      Slide Shot a besoin de <strong>poppler</strong> pour lire les PDF et fabriquer les images.
+      Ce composant n'est pas installé sur cet ordinateur.
+    </p>
+    <p>Pour l'installer :</p>
+    <ol>
+      <li>Ouvrez l'application <strong>Terminal</strong>.</li>
+      <li>Placez-vous dans le dossier du projet (glissez le dossier sur la fenêtre du Terminal, ou tapez <code>cd</code> suivi d'un espace puis glissez le dossier).</li>
+      <li>Tapez la commande suivante puis appuyez sur Entrée :</li>
+    </ol>
+    <pre class="code-block">npm run setup</pre>
+    <p>Si cette commande échoue, essayez :</p>
+    <pre class="code-block">brew install poppler</pre>
+    <p>Une fois l'installation terminée, revenez ici et cliquez sur « Réessayer ».</p>
+    <button id="poppler-retry-btn" type="button" class="btn btn-primary">Réessayer</button>
+  </div>
+</section>
+
+<!-- Écran de dépôt -->
+<section id="view-drop" class="view" hidden>
+  <div id="dropzone" class="dropzone">
+    <div class="dropzone-content">
+      <h1>Slide Shot</h1>
+      <p class="dropzone-hint">Glissez un fichier PDF ici</p>
+      <p class="dropzone-or">ou</p>
+      <button id="browse-btn" type="button" class="btn btn-primary btn-large">Parcourir…</button>
+      <p class="dropzone-note">Pour les gros fichiers, préférez « Parcourir… » : le fichier n'est pas recopié.</p>
+    </div>
+  </div>
+  <div id="upload-status" class="upload-status" hidden>
+    <div class="spinner" aria-hidden="true"></div>
+    <p id="upload-status-text">Envoi en cours…</p>
+  </div>
+</section>
+
+<!-- Espace de travail -->
+<section id="view-workspace" class="view view-workspace" hidden>
+  <header class="workspace-header">
+    <div class="doc-info">
+      <span id="doc-name" class="doc-name"></span>
+      <span id="doc-page-count" class="doc-page-count"></span>
+    </div>
+    <button id="reset-btn" type="button" class="btn">Charger un autre PDF</button>
+  </header>
+
+  <div class="workspace-body">
+    <div class="grid-panel">
+      <div class="grid-toolbar">
+        <button id="select-all-btn" type="button" class="btn">Tout</button>
+        <button id="select-none-btn" type="button" class="btn">Rien</button>
+        <button id="select-invert-btn" type="button" class="btn">Inverser</button>
+        <span id="selection-count" class="selection-count"></span>
+      </div>
+      <div id="thumb-grid" class="thumb-grid"></div>
+    </div>
+
+    <aside class="side-panel">
+      <div class="field-group">
+        <label for="page-spec-input">Pages à exporter</label>
+        <input type="text" id="page-spec-input" placeholder="ex. 1,3,5-8" autocomplete="off" spellcheck="false">
+        <div id="page-spec-warnings" class="warnings"></div>
+      </div>
+
+      <div class="field-group">
+        <label for="prefix-display">Préfixe des fichiers</label>
+        <input type="text" id="prefix-display" readonly>
+        <p class="field-hint">Les fichiers seront nommés « préfixe-slide-XXX.png ».</p>
+      </div>
+
+      <div class="field-group">
+        <label>Destination</label>
+        <button id="choose-dest-btn" type="button" class="btn">Choisir le dossier…</button>
+        <div id="dest-path" class="dest-path"></div>
+      </div>
+
+      <button id="export-btn" type="button" class="btn btn-primary btn-large" disabled>Exporter</button>
+
+      <div id="export-progress" class="export-progress" hidden>
+        <progress id="export-progress-bar" max="100" value="0"></progress>
+        <div id="export-progress-count" class="export-progress-count"></div>
+      </div>
+
+      <div id="export-result" class="export-result" hidden>
+        <p id="export-result-summary"></p>
+        <div id="export-result-warnings" class="warnings"></div>
+        <button id="reveal-btn" type="button" class="btn">Afficher dans le Finder</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>

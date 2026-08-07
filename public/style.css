@@ -1,0 +1,579 @@
+:root {
+  --bg: #f4f4f2;
+  --panel-bg: #ffffff;
+  --border: #d9d9d6;
+  --border-strong: #b6b6b2;
+  --text: #1c1c1a;
+  --text-muted: #6b6b67;
+  --accent: #2954d6;
+  --accent-strong: #1e3fa8;
+  --accent-contrast: #ffffff;
+  /* Fond des vignettes : assez sombre pour detourer une slide blanche. */
+  --thumb-bg: #c9c9c4;
+  --error: #a4241c;
+  --error-bg: #fbeae8;
+  --error-border: #eec3bf;
+  --radius: 6px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/*
+ * Colonne : le bandeau d'erreur occupe sa place en haut et la vue affichee
+ * prend le reste. Rien ne se recouvre, donc l'en-tete de l'espace de travail
+ * (et son bouton « Charger un autre PDF ») reste atteignable bandeau ouvert.
+ */
+body {
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font: inherit;
+}
+
+code, pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ---------------------------------------------------------------- */
+/* Bannière d'erreur                                                 */
+/* ---------------------------------------------------------------- */
+
+/*
+ * Dans le flux, pas au-dessus : un bandeau flottant masquait l'en-tete de
+ * l'espace de travail, et comme la page ne defile pas il fallait le fermer
+ * pour retrouver « Charger un autre PDF ».
+ */
+.error-banner {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--error-bg);
+  border-bottom: 1px solid var(--error-border);
+  color: var(--error);
+  font-size: 13px;
+}
+
+.error-banner[hidden] {
+  display: none;
+}
+
+#error-message {
+  flex: 1;
+}
+
+#error-dismiss {
+  border: none;
+  background: transparent;
+  color: var(--error);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+/* ---------------------------------------------------------------- */
+/* Vues                                                               */
+/* ---------------------------------------------------------------- */
+
+/*
+ * `#view-drop` plus bas est un selecteur d'ID (1,0,0) : il gagnerait sur
+ * `.view[hidden]` (0,2,0) et l'ecran de depot resterait affiche par-dessus
+ * l'espace de travail, repousse hors de l'ecran. On le nomme donc ici.
+ */
+.view[hidden],
+#view-drop[hidden] {
+  display: none;
+}
+
+/*
+ * `1 0 auto` : occupe la hauteur restante quand le contenu est court (donc
+ * centre), mais ne se comprime jamais sous lui — sur une fenetre trop basse la
+ * page defile au lieu de rogner l'encadre d'installation.
+ */
+.view-center {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+/* Spinner : indicateur de chargement fonctionnel, pas décoratif. */
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.setup-box {
+  max-width: 480px;
+  text-align: left;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+}
+
+.setup-box h1 {
+  font-size: 19px;
+  margin: 0 0 8px;
+}
+
+.setup-box p {
+  margin: 8px 0;
+}
+
+.setup-box ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.code-block {
+  background: #1c1c1a;
+  color: #f4f4f2;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.setup-box .btn {
+  margin-top: 12px;
+}
+
+/* ---------------------------------------------------------------- */
+/* Boutons                                                            */
+/* ---------------------------------------------------------------- */
+
+.btn {
+  padding: 8px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--panel-bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--text-muted);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.btn-large {
+  padding: 12px 22px;
+  font-size: 15px;
+}
+
+/* ---------------------------------------------------------------- */
+/* Écran de dépôt                                                     */
+/* ---------------------------------------------------------------- */
+
+#view-drop {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropzone {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 24px;
+  border: 2px dashed var(--border-strong);
+  border-radius: 12px;
+  background: var(--panel-bg);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.dropzone.drag-over {
+  border-color: var(--accent);
+  background: #eef2fd;
+}
+
+.dropzone[hidden] {
+  display: none;
+}
+
+.dropzone-content {
+  text-align: center;
+  max-width: 420px;
+  padding: 24px;
+}
+
+.dropzone-content h1 {
+  font-size: 22px;
+  margin: 0 0 20px;
+  color: var(--text);
+}
+
+.dropzone-hint {
+  font-size: 16px;
+  margin: 0 0 6px;
+}
+
+.dropzone-or {
+  color: var(--text-muted);
+  margin: 6px 0;
+}
+
+.dropzone-note {
+  margin-top: 18px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.upload-status {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 24px;
+}
+
+.upload-status[hidden] {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- */
+/* Espace de travail                                                  */
+/* ---------------------------------------------------------------- */
+
+.view-workspace {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-bg);
+  flex-shrink: 0;
+}
+
+.doc-info {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.doc-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40vw;
+}
+
+.doc-page-count {
+  color: var(--text-muted);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.workspace-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* ---- Grille ---- */
+
+.grid-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.grid-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-bg);
+  flex-shrink: 0;
+}
+
+.selection-count {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.thumb-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: grid;
+  /*
+   * Autant de colonnes que la largeur en accepte, jamais moins de 124 px
+   * chacune. La hauteur suit l'aspect-ratio des vignettes : a ~1100 px de large
+   * (fenetre de 1440 px moins le panneau lateral), cela donne 8 colonnes de
+   * ~130x73 px.
+   */
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: 10px;
+  /*
+   * `grid-auto-rows` est l'invariant de cette grille, pas un reglage.
+   *
+   * La grille a une hauteur definie (`flex: 1` dans un panneau plein ecran).
+   * Faute de `grid-auto-rows`, ses rangees implicites sont en `auto` : leur
+   * fonction de dimensionnement maximale est etirable, et elles se partagent
+   * cette hauteur au lieu de suivre leur contenu. Sur 180 pages en 8 colonnes,
+   * les 23 rangees tombaient a 22,8 px alors que les vignettes en font 73 : un
+   * pas de rangee de 32,8 px, donc 40 px de chevauchement — on ne voyait qu'une
+   * bande du haut de chaque slide — et un scrollHeight de 810 px au lieu de
+   * 1931 : la grille ne defilait plus.
+   * `align-content: start` n'y changeait rien : il repartit l'espace libre, il
+   * ne fixe pas la taille des rangees.
+   *
+   * `min-content` rend la rangee non etirable : elle vaut exactement la hauteur
+   * des vignettes qu'elle contient, celle que l'aspect-ratio deduit de la
+   * largeur de colonne. Elle reste donc juste quel que soit le nombre de
+   * colonnes, la taille des vignettes ou le format du document — mesure a
+   * 73 px en 8 colonnes, 204 px en 3, 309 px en 2 — ce qu'une hauteur en dur
+   * ne ferait pas.
+   *
+   * `align-content: start` n'a plus d'effet mesurable une fois les rangees non
+   * etirables ; on le garde pour dire explicitement qu'elles s'empilent en
+   * haut, sans s'etaler quand le document tient dans la hauteur.
+   */
+  grid-auto-rows: min-content;
+  align-content: start;
+}
+
+/*
+ * 16/9 : le format annonce des decks. `contain` plutot que `cover` :
+ * une vignette ne sert qu'a reconnaitre la slide qu'on selectionne, la rogner
+ * (12,5 % par bord en 16/9, 47 % de la hauteur en portrait) la rend inutile.
+ * Le fond est volontairement plus sombre que la page : une slide blanche, un
+ * PDF portrait ou un scan clair restent detourables sur les bandes laterales.
+ */
+.thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--thumb-bg);
+}
+
+.thumb:hover {
+  border-color: var(--border-strong);
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Miniature illisible (rendu echoue) : pas d'icone d'image cassee, une case vide. */
+.thumb.is-broken img {
+  display: none;
+}
+
+.thumb-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  min-width: 18px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.thumb.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent) inset;
+}
+
+.thumb.is-selected .thumb-badge {
+  background: var(--accent);
+}
+
+/* ---- Panneau latéral ---- */
+
+.side-panel {
+  width: 300px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--panel-bg);
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.field-group input[type="text"] {
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  font: inherit;
+  color: var(--text);
+  background: var(--panel-bg);
+}
+
+.field-group input[type="text"]:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.field-group input[readonly] {
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.warnings {
+  font-size: 12px;
+  color: var(--error);
+}
+
+.warnings ul {
+  margin: 4px 0 0;
+  padding-left: 16px;
+}
+
+.dest-path {
+  font-size: 12px;
+  color: var(--text-muted);
+  word-break: break-all;
+  min-height: 1.4em;
+}
+
+.export-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.export-progress[hidden] {
+  display: none;
+}
+
+.export-progress progress {
+  width: 100%;
+  height: 8px;
+  accent-color: var(--accent);
+}
+
+.export-progress-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.export-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.export-result[hidden] {
+  display: none;
+}
+
+.export-result-summary,
+#export-result-summary {
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------- */
+/* Petit écran (portable 13")                                        */
+/* ---------------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .workspace-body {
+    flex-direction: column;
+  }
+
+  .side-panel {
+    width: auto;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "slide-shot",
+  "version": "1.0.0",
+  "description": "Extrait des slides d'un PDF en PNG haute definition, en local.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "setup": "bash scripts/setup.sh",
+    "test": "node --test test/*.test.js"
+  }
+}
