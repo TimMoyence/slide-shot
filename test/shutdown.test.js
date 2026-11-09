@@ -25,8 +25,7 @@ const { sweepTemp, sweepTempSync, tempPrefix, sweepFailureMessage } = await impo
   '../lib/export-job.js'
 );
 
-const TEST_PDF = '/Users/Tim/Desktop/all/dev/perso/2020-Scrum-Guide-French.pdf';
-const TEST_PDF_PAGES = 15;
+const { PDF_DE_TEST: TEST_PDF, PAGES_DU_PDF_DE_TEST: TEST_PDF_PAGES } = await import('./fixtures/pdf-de-test.js');
 
 let handle;
 let origin;

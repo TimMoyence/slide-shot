@@ -15,9 +15,8 @@ const { start } = await import('../server.js');
 // l'etat des documents pour tester les chemins d'erreur.
 const sessions = await import('../lib/sessions.js');
 
-const TEST_PDF = '/Users/Tim/Desktop/all/dev/perso/2020-Scrum-Guide-French.pdf';
-const TEST_PDF_PAGES = 15;
-const TEST_PDF_BASE = '2020-Scrum-Guide-French';
+const { PDF_DE_TEST: TEST_PDF, PAGES_DU_PDF_DE_TEST: TEST_PDF_PAGES } = await import('./fixtures/pdf-de-test.js');
+const TEST_PDF_BASE = 'quinze-pages';
 
 let handle;
 let origin;
@@ -268,7 +267,7 @@ describe('/api/open', () => {
     const body = await openTestPdf();
     assert.equal(body.pageCount, TEST_PDF_PAGES);
     assert.equal(body.base, TEST_PDF_BASE);
-    assert.equal(body.name, '2020-Scrum-Guide-French.pdf');
+    assert.equal(body.name, 'quinze-pages.pdf');
     assert.equal(typeof body.docId, 'string');
     assert.ok(body.docId.length > 10);
   });
