@@ -4,9 +4,7 @@ import { mkdtemp, rm, writeFile, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { findPoppler, getPageCount, renderRange } from '../lib/poppler.js';
-
-const PDF_PATH = '/Users/Tim/Desktop/all/dev/perso/2020-Scrum-Guide-French.pdf';
-const EXPECTED_PAGE_COUNT = 15; // confirme via `pdfinfo` sur la machine de test
+import { PDF_DE_TEST as PDF_PATH, PAGES_DU_PDF_DE_TEST as EXPECTED_PAGE_COUNT } from './fixtures/pdf-de-test.js';
 
 const poppler = findPoppler();
 
